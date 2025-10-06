@@ -2,25 +2,24 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class PostReviewedNotification extends Notification
+class UserCreatedNotification extends Notification
 {
     use Queueable;
 
-    public $post;
-    public $status;
-
+    public User $user;
     /**
      * Create a new notification instance.
      */
-    public function __construct($post, $status)
+    public function __construct(User $user)
     {
-        $this->post = $post;
-        $this->status = $status;
+        $this->user = $user;
     }
 
     /**
@@ -30,7 +29,7 @@ class PostReviewedNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast', 'mail'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -39,9 +38,9 @@ class PostReviewedNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');
     }
 
     /**
@@ -51,12 +50,13 @@ class PostReviewedNotification extends Notification
      */
     public function toArray(object $notifiable): array
     {
-
         return [
-            'title' => 'Post reviewed',
-            'message' => "Your post '{$this->post->title}' was {$this->status}.",
-            'post_id' => $this->post->id,
-            'status' => $this->status,
+            'message' => 'تم إنشاء مستخدم جديد: ' . $this->user->name,
+            'user_id' => $this->user->id,
         ];
+    }
+
+    public function toBroadcast($notifiable) {
+        return new BroadcastMessage($this->toArray($notifiable));
     }
 }

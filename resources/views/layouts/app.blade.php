@@ -1,110 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ar" dir="rtl">
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Notification Test - Dashboard</title>
-
-    <!-- Custom fonts for this template-->
-    <link href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="{{ asset('assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ config('app.name', 'NotifApp') }}</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background:#0f172a; color:#e2e8f0; }
+    .container { max-width: 980px; margin: 2rem auto; padding: 1rem; }
+    .card { background:#111827; border:1px solid #1f2937; border-radius: 16px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .btn { padding: .6rem 1rem; border-radius: 12px; border:1px solid #334155; background:#1f2937; color:#e2e8f0; cursor:pointer }
+    input, textarea { width:100%; padding:.6rem .8rem; border-radius: 12px; background:#0b1220; color:#e2e8f0; border:1px solid #25324a; }
+    label { color:#93c5fd; font-size:.95rem }
+    h1,h2,h3 { color:#bfdbfe }
+    .badge { display:inline-block; background:#0b5; color:white; padding:.25rem .6rem; border-radius:999px; font-size:.75rem }
+  </style>
+  <!-- Echo & Pusher (client) via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
 </head>
+<body>
+  <div class="container">
+    @yield('content')
+  </div>
 
-<body id="page-top">
+  <script>
+    const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-        <!-- Sidebar -->
-        @include('layouts.sections.sidebar')
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                @include('layouts.sections.header')
-                <!-- End of Topbar -->
-
-                @yield('content')
-
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2026</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
-
-        </div>
-        <!-- End of Content Wrapper -->
-
-
-    </div>
-    <!-- End of Page Wrapper -->
-
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
-
-    <!-- Page level plugins -->
-    <script src="{{ asset('assets/vendor/chart.js/Chart.min.js') }}"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="{{ asset('assets/js/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('assets/js/demo/chart-pie-demo.js') }}"></script>
-
+    // Laravel Echo over local WebSockets server
+    window.Echo = new Echo({
+      broadcaster: 'pusher',
+      key: '{{ env('PUSHER_APP_KEY', 'local') }}',
+      cluster: '{{ env('PUSHER_APP_CLUSTER', 'mt1') }}',
+      wsHost: '{{ env('LARAVEL_WEBSOCKETS_HOST', request()->getHost()) }}',
+      wsPort: Number('{{ env('LARAVEL_WEBSOCKETS_PORT', 6001) }}'),
+      forceTLS: false,
+      disableStats: true,
+      enabledTransports: ['ws', 'wss'],
+      auth: {
+        headers: {
+          'X-CSRF-TOKEN': csrf
+        }
+      }
+    });
+  </script>
+  @stack('scripts')
 </body>
-
 </html>

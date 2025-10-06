@@ -2,25 +2,25 @@
 
 namespace App\Notifications;
 
-use App\Models\Post;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class PostCreatedNotification extends Notification
+class UserApprovedNotification extends Notification
 {
     use Queueable;
 
-    public Post $post;
+    public User $user;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(Post $post)
+    public function __construct(User $user)
     {
-        $this->post = $post;
+        $this->user = $user;
     }
 
     /**
@@ -52,9 +52,8 @@ class PostCreatedNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => 'منشور جديد: ' . $this->post->title,
-            'post_id' => $this->post->id,
-            'author'  => optional($this->post->user)->name,
+            'message' => 'تمت الموافقة على حسابك بنجاح',
+            'user_id' => $this->user->id,
         ];
     }
 

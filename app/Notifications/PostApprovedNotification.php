@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 
-class PostCreatedNotification extends Notification
+class PostApprovedNotification extends Notification
 {
     use Queueable;
 
@@ -39,9 +39,9 @@ class PostCreatedNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -52,9 +52,8 @@ class PostCreatedNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => 'منشور جديد: ' . $this->post->title,
+            'message' => 'تمت الموافقة على منشورك: ' . $this->post->title,
             'post_id' => $this->post->id,
-            'author'  => optional($this->post->user)->name,
         ];
     }
 
